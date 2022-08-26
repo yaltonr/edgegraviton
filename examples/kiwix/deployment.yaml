@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kiwix
+spec:
+  selector:
+    matchLabels:
+      app: kiwix
+  template:
+    metadata:
+      labels:
+        app: kiwix
+    spec:
+      containers:
+        - name: kiwix-serve
+          image: "kiwix/kiwix-tools:3.3.0-1"
+          command:
+            [
+              "sh",
+              "-c",
+              "while [ ! -f /data/###ZARF_DATA_INJECTON_MARKER### ]; do ls -l /data && sleep 1; done; kiwix-serve -v /data/*.zim",
+            ]
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: kiwix-data

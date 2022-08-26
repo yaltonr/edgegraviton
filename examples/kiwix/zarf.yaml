@@ -1,0 +1,37 @@
+kind: ZarfPackageConfig
+metadata:
+  name: kiwix
+  description: Kiwix Serve with the serverfault dataset
+  url: https://www.kiwix.org/
+  image: https://www.kiwix.org/wp-content/uploads/kiwix-logo-995x200-1.png
+
+components:
+  - name: kiwix-serve
+    required: true
+    images:
+      - kiwix/kiwix-tools:3.3.0-1
+    manifests:
+      - name: kiwix-serve
+        namespace: kiwix
+        files:
+          - deployment.yaml
+          - service.yaml
+          - persistence.yaml
+    scripts:
+      prepare:
+        - "rm -fr data && mkdir data"
+        # 653da21ad5df594907acfbcf2b97a1aa05ebe3ff83a5a42e1154c87e77a0783a  wikipedia_en_physics_mini_2022-08.zim
+        - "curl -sL https://download.kiwix.org/zim/wikipedia/wikipedia_en_physics_mini_2022-08.zim -o data/wikipedia-en-physics.zim"
+        # cc0d1e6cc1e979153d78933f645cbab621e35e5fa685d3fbd8d81763ee048ce1  lifehacks.stackexchange.com_en_all_2022-05.zim
+        - "curl -sL https://download.kiwix.org/zim/stack_exchange/lifehacks.stackexchange.com_en_all_2022-05.zim -o data/lifehacks.zim"
+        # 5a918a458ca963e7c3600502927c2212bf128133951ba4031e07dbf89379e7c4  devops.stackexchange.com_en_all_2022-05.zim
+        - "curl -sL https://download.kiwix.org/zim/stack_exchange/devops.stackexchange.com_en_all_2022-05.zim -o data/devops.stackexchange.com.zim"
+        # a1632e2bb45954221a8c5c84b22481ed99c81c3516ba0c8b77075ebdee075f5b  khan-academy-videos_en_introduction-to-electrical-engineering-electrical-engineering-khan-academy_2021-07.zim
+        - "curl -sL https://download.kiwix.org/zim/videos/khan-academy-videos_en_introduction-to-electrical-engineering-electrical-engineering-khan-academy_2021-07.zim -o data/khan-academy-ee.zim"
+    dataInjections:
+      - source: data
+        target:
+          namespace: kiwix
+          selector: app=kiwix
+          container: kiwix-serve
+          path: /data
