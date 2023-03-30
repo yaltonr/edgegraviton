@@ -146,9 +146,9 @@ Additionally, any supported config paramater can also be set via env variable us
 
 Config files set default values, but can still be overwritten by command line flags. For example, if the config file sets the log level to `info` and the command line flag is set to `debug`, the log level will be `debug`. The order of precedence for command line configuration is:
 
-1. Command line flags
-2. Environment variables
-3. Config file
-4. Default values
+1. Command line flags.
+2. Environment variables.
+3. Config file.
+4. Default values.
 
 See the [Config File Example](../../../examples/config-file/README.md) for an example of using a config file.
