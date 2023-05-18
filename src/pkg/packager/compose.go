@@ -40,7 +40,7 @@ func (p *Packager) composeComponents() error {
 		} else {
 			composedComponent, err := p.getComposedComponent(component)
 			if err != nil {
-				return fmt.Errorf("unable to compose component %s: %w", component.Name, err)
+				return fmt.Errorf("unable to compose component %s: %w", component.Import, err)
 			}
 			components = append(components, composedComponent)
 		}
@@ -53,12 +53,24 @@ func (p *Packager) composeComponents() error {
 	return nil
 }
 
-func (p *Packager) getComposedPackage(parent types.ZarfComponent) ([]types.ZarfComponent, error) {
+func (p *Packager) getComposedPackage(parentPackage types.ZarfPackage) ([]types.ZarfComponent, error) {
 	message.Debugf("packager.composePackages()")
 
 	if err := validate.ImportPackage(&parent); err != nil {
 		return nil, fmt.Errorf("invalid import definition in the %s component: %w", parent.Name, err)
 	}
+	pathAncestry := ""
+	children, err := p.mergePackages(parent, pathAncestry)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get children components: %w", err)
+	}
+
+	// p.mergeChildrenOverrides(&children, parent)
+
+	return children, nil
+}
+
+func (p *Packager) getChildrenComponents(parent types.ZarfComponent, pathAncestry string) (children []types.ZarfComponent, err error) {
 
 	var localPath string
 
@@ -103,28 +115,26 @@ func (p *Packager) getComposedPackage(parent types.ZarfComponent) ([]types.ZarfC
 		return nil, fmt.Errorf("unable to get sub package: %w", err)
 	}
 
-	subComponents := []types.ZarfComponent{}
 	for _, component := range subPkg.Components {
 		if component.Import.Path != "" || component.Import.URL != "" {
 			if component.Import.Type == "package" {
-				composedComponents, err := p.getComposedPackage(component)
+				composedComponents, err := p.getChildComponent(component, pathAncestry)
 				if err != nil {
 					return nil, fmt.Errorf("unable to compose package %s: %w", component.Import, err)
 				}
-				subComponents = append(subComponents, composedComponents...)
+				children = append(children, composedComponents...)
 			} else {
 				composedComponent, err := p.getComposedComponent(component)
 				if err != nil {
 					return nil, fmt.Errorf("unable to compose component %s: %w", component.Import, err)
 				}
-				subComponents = append(subComponents, composedComponent)
+				children = append(children, composedComponent)
 			}
 		} else {
-			subComponents = append(subComponents, component)
+			children = append(children, component)
 		}
 	}
-
-	return subComponents, nil
+	return children, nil
 }
 
 // getComposedComponent recursively retrieves a composed Zarf component
