@@ -234,7 +234,7 @@
         },
         "import": {
           "$schema": "http://json-schema.org/draft-04/schema#",
-          "$ref": "#/definitions/ZarfComponentImport",
+          "$ref": "#/definitions/ZarfImport",
           "description": "Import a component from another Zarf package"
         },
         "scripts": {
@@ -616,26 +616,6 @@
       "additionalProperties": false,
       "type": "object"
     },
-    "ZarfComponentImport": {
-      "properties": {
-        "name": {
-          "type": "string",
-          "description": "The name of the component to import from the referenced zarf.yaml"
-        },
-        "path": {
-          "pattern": "^(?!.*###ZARF_PKG_TMPL_).*$",
-          "type": "string",
-          "description": "The relative path to a directory containing a zarf.yaml to import from"
-        },
-        "url": {
-          "pattern": "^oci://(?!.*###ZARF_PKG_TMPL_).*$",
-          "type": "string",
-          "description": "The URL to a Zarf package to import via OCI"
-        }
-      },
-      "additionalProperties": false,
-      "type": "object"
-    },
     "ZarfComponentOnlyCluster": {
       "properties": {
         "architecture": {
@@ -759,6 +739,34 @@
           },
           "type": "array",
           "description": "List of symlinks to create during package deploy"
+        }
+      },
+      "additionalProperties": false,
+      "type": "object"
+    },
+    "ZarfImport": {
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The name of the component to import from the referenced zarf.yaml"
+        },
+        "path": {
+          "pattern": "^(?!.*###ZARF_PKG_TMPL_).*$",
+          "type": "string",
+          "description": "The relative path to a directory containing a zarf.yaml to import from"
+        },
+        "url": {
+          "pattern": "^oci://(?!.*###ZARF_PKG_TMPL_).*$",
+          "type": "string",
+          "description": "The URL to a Zarf OCI package"
+        },
+        "type": {
+          "enum": [
+            "component",
+            "package"
+          ],
+          "type": "string",
+          "description": "The type of import to perform"
         }
       },
       "additionalProperties": false,

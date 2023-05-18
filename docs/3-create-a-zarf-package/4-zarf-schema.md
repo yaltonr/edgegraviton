@@ -725,7 +725,7 @@ Must be one of:
 | ------------------------- | -------------------------------------------------------------------------------------------------------- |
 | **Type**                  | `object`                                                                                                 |
 | **Additional properties** | [![Not allowed](https://img.shields.io/badge/Not%20allowed-red)](# "Additional Properties not allowed.") |
-| **Defined in**            | #/definitions/ZarfComponentImport                                                                        |
+| **Defined in**            | #/definitions/ZarfImport                                                                                 |
 
 <details>
 <summary>
@@ -770,7 +770,7 @@ Must be one of:
 &nbsp;
 <blockquote>
 
-**Description:** The URL to a Zarf package to import via OCI
+**Description:** The URL to a Zarf OCI package
 
 |          |          |
 | -------- | -------- |
@@ -779,6 +779,28 @@ Must be one of:
 | Restrictions                      |                                                                                                                                           |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | **Must match regular expression** | ```^oci://(?!.*###ZARF_PKG_TMPL_).*$``` [Test](https://regex101.com/?regex=%5Eoci%3A%2F%2F%28%3F%21.%2A%23%23%23ZARF_PKG_TMPL_%29.%2A%24) |
+
+</blockquote>
+</details>
+
+<details>
+<summary>
+<strong> <a name="components_items_import_type"></a>type</strong>
+</summary>
+&nbsp;
+<blockquote>
+
+**Description:** The type of import to perform
+
+|          |                    |
+| -------- | ------------------ |
+| **Type** | `enum (of string)` |
+
+:::note
+Must be one of:
+* "component"
+* "package"
+:::
 
 </blockquote>
 </details>

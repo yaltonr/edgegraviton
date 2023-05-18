@@ -304,7 +304,7 @@ export interface ZarfComponent {
     /**
      * Import a component from another Zarf package
      */
-    import?: ZarfComponentImport;
+    import?: ZarfImport;
     /**
      * Kubernetes manifests to be included in a generated Helm chart on package deploy
      */
@@ -706,7 +706,7 @@ export interface ZarfFile {
 /**
  * Import a component from another Zarf package
  */
-export interface ZarfComponentImport {
+export interface ZarfImport {
     /**
      * The name of the component to import from the referenced zarf.yaml
      */
@@ -716,9 +716,21 @@ export interface ZarfComponentImport {
      */
     path?: string;
     /**
-     * The URL to a Zarf package to import via OCI
+     * The type of import to perform
+     */
+    type?: Type;
+    /**
+     * The URL to a Zarf OCI package
      */
     url?: string;
+}
+
+/**
+ * The type of import to perform
+ */
+export enum Type {
+    Component = "component",
+    Package = "package",
 }
 
 export interface ZarfManifest {
@@ -1437,7 +1449,7 @@ const typeMap: any = {
         { json: "files", js: "files", typ: u(undefined, a(r("ZarfFile"))) },
         { json: "group", js: "group", typ: u(undefined, "") },
         { json: "images", js: "images", typ: u(undefined, a("")) },
-        { json: "import", js: "import", typ: u(undefined, r("ZarfComponentImport")) },
+        { json: "import", js: "import", typ: u(undefined, r("ZarfImport")) },
         { json: "manifests", js: "manifests", typ: u(undefined, a(r("ZarfManifest"))) },
         { json: "name", js: "name", typ: "" },
         { json: "only", js: "only", typ: u(undefined, r("ZarfComponentOnlyTarget")) },
@@ -1541,9 +1553,10 @@ const typeMap: any = {
         { json: "symlinks", js: "symlinks", typ: u(undefined, a("")) },
         { json: "target", js: "target", typ: "" },
     ], false),
-    "ZarfComponentImport": o([
+    "ZarfImport": o([
         { json: "name", js: "name", typ: u(undefined, "") },
         { json: "path", js: "path", typ: u(undefined, "") },
+        { json: "type", js: "type", typ: u(undefined, r("Type")) },
         { json: "url", js: "url", typ: u(undefined, "") },
     ], false),
     "ZarfManifest": o([
@@ -1740,6 +1753,10 @@ const typeMap: any = {
         "http",
         "https",
         "tcp",
+    ],
+    "Type": [
+        "component",
+        "package",
     ],
     "Architecture": [
         "amd64",
