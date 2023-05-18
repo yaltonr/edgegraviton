@@ -6,6 +6,7 @@ package packager
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"strings"
@@ -21,7 +22,7 @@ import (
 
 // composeComponents builds the composed components list for the current config.
 func (p *Packager) composeComponents() error {
-	message.Debugf("packager.ComposeComponents()")
+	message.Debugf("packager.composeComponents()")
 
 	components := []types.ZarfComponent{}
 
@@ -30,6 +31,12 @@ func (p *Packager) composeComponents() error {
 			// Migrate any deprecated component configurations now
 			component = deprecated.MigrateComponent(p.cfg.Pkg.Build, component)
 			components = append(components, component)
+		} else if component.Import.Type == "package" {
+			composedComponents, err := p.getComposedPackage(component)
+			if err != nil {
+				return fmt.Errorf("unable to compose package %s: %w", component.Import, err)
+			}
+			components = append(components, composedComponents...)
 		} else {
 			composedComponent, err := p.getComposedComponent(component)
 			if err != nil {
@@ -44,6 +51,80 @@ func (p *Packager) composeComponents() error {
 	p.cfg.Pkg.Components = components
 
 	return nil
+}
+
+func (p *Packager) getComposedPackage(parent types.ZarfComponent) ([]types.ZarfComponent, error) {
+	message.Debugf("packager.composePackages()")
+
+	if err := validate.ImportPackage(&parent); err != nil {
+		return nil, fmt.Errorf("invalid import definition in the %s component: %w", parent.Name, err)
+	}
+
+	var localPath string
+
+	if parent.Import.URL != "" {
+		ociURL := strings.TrimPrefix(parent.Import.URL, utils.OCIURLPrefix)
+		cachePath := filepath.Join(config.GetAbsCachePath(), "oci", ociURL)
+		err := os.MkdirAll(cachePath, 0755)
+		if err != nil {
+			return nil, fmt.Errorf("unable to create cache path %s: %w", cachePath, err)
+		}
+		err = p.handleOciPackage(parent.Import.URL, cachePath, p.cfg.PullOpts.CopyOptions.Concurrency)
+		if err != nil {
+			return nil, err
+		}
+		localPath = cachePath
+	} else {
+		tmpDir, err := utils.MakeTempDir("zarf-import")
+		if err != nil {
+			return nil, fmt.Errorf("unable to create temporary directory: %w", err)
+		}
+		defer os.RemoveAll(tmpDir)
+		err = archiver.Walk(parent.Import.Path, func(f archiver.File) error {
+			if f.Name() == config.ZarfYAML {
+				file, err := io.ReadAll(f)
+				if err != nil {
+					return err
+				}
+				err = os.WriteFile(filepath.Join(tmpDir, config.ZarfYAML), file, 0644)
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			return nil, fmt.Errorf("unable to extract zarf.yaml: %w", err)
+		}
+		localPath = tmpDir
+	}
+	subPkg, err := p.getSubPackage(localPath)
+	if err != nil {
+		return nil, fmt.Errorf("unable to get sub package: %w", err)
+	}
+
+	subComponents := []types.ZarfComponent{}
+	for _, component := range subPkg.Components {
+		if component.Import.Path != "" || component.Import.URL != "" {
+			if component.Import.Type == "package" {
+				composedComponents, err := p.getComposedPackage(component)
+				if err != nil {
+					return nil, fmt.Errorf("unable to compose package %s: %w", component.Import, err)
+				}
+				subComponents = append(subComponents, composedComponents...)
+			} else {
+				composedComponent, err := p.getComposedComponent(component)
+				if err != nil {
+					return nil, fmt.Errorf("unable to compose component %s: %w", component.Import, err)
+				}
+				subComponents = append(subComponents, composedComponent)
+			}
+		} else {
+			subComponents = append(subComponents, component)
+		}
+	}
+
+	return subComponents, nil
 }
 
 // getComposedComponent recursively retrieves a composed Zarf component
@@ -95,7 +176,7 @@ func (p *Packager) getChildComponent(parent types.ZarfComponent, pathAncestry st
 		}
 
 		componentLayer := filepath.Join("components", fmt.Sprintf("%s.tar", childComponentName))
-		err = p.handleOciPackage(skelURL, cachePath, 3, componentLayer)
+		err = p.handleOciPackage(parent.Import.URL, cachePath, 3, componentLayer)
 		if err != nil {
 			return child, fmt.Errorf("unable to pull skeleton from %s: %w", skelURL, err)
 		}

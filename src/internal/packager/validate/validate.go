@@ -66,8 +66,14 @@ func Run(pkg types.ZarfPackage) error {
 func ImportPackage(composedComponent *types.ZarfComponent) error {
 	path := composedComponent.Import.Path
 	url := composedComponent.Import.URL
+	importType := composedComponent.Import.Type
 
-	if url == "" {
+	supportedImportTypes := []string{"package", "component"}
+	if !utils.SliceContains(supportedImportTypes, importType) {
+		return fmt.Errorf("invalid import type %s for component %s", importType, composedComponent.Name)
+	}
+
+	if url == "" && importType == "component" {
 		// ensure path exists
 		if path == "" {
 			return fmt.Errorf(lang.PkgValidateErrImportPathMissing, composedComponent.Name)
@@ -85,7 +91,16 @@ func ImportPackage(composedComponent *types.ZarfComponent) error {
 
 		// ensure there is a zarf.yaml in provided path
 		if utils.InvalidPath(filepath.Join(path, config.ZarfYAML)) {
-			return fmt.Errorf(lang.PkgValidateErrImportPathInvalid, composedComponent.Import.Path)
+			return fmt.Errorf(lang.PkgValidateErrImportPathInvalid, path)
+		}
+	} else if url == "" && importType == "package" {
+		// ensure path exists
+		if path == "" {
+			return fmt.Errorf(lang.PkgValidateErrImportPathMissing, composedComponent.Name)
+		}
+		// ensure the path matches zarf packages regex
+		if !utils.IsZarfTarball(path) {
+			return fmt.Errorf(lang.PkgValidateErrImportPathInvalid, path)
 		}
 	} else {
 		// ensure path is empty
@@ -94,7 +109,7 @@ func ImportPackage(composedComponent *types.ZarfComponent) error {
 		}
 		ok := utils.IsOCIURL(url)
 		if !ok {
-			return fmt.Errorf(lang.PkgValidateErrImportURLInvalid, composedComponent.Import.URL)
+			return fmt.Errorf(lang.PkgValidateErrImportURLInvalid, url)
 		}
 	}
 

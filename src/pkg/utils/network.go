@@ -20,6 +20,7 @@ import (
 
 	"github.com/defenseunicorns/zarf/src/config/lang"
 	"github.com/defenseunicorns/zarf/src/pkg/message"
+	"oras.land/oras-go/v2/registry"
 )
 
 // Nonstandard URL schemes or prefixes
@@ -39,7 +40,14 @@ func IsURL(source string) bool {
 // IsOCIURL returns true if the given URL is an OCI URL.
 func IsOCIURL(source string) bool {
 	parsedURL, err := url.Parse(source)
-	return err == nil && parsedURL.Scheme == "oci"
+	if err != nil {
+		return false
+	}
+	if parsedURL.Scheme != OCIURLScheme {
+		return false
+	}
+	ref, err := registry.ParseReference(parsedURL.Host + parsedURL.Path)
+	return err == nil && ref != registry.Reference{}
 }
 
 // DoHostnamesMatch returns a boolean indicating if the hostname of two different URLs are the same.

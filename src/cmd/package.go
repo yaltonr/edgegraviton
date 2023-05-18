@@ -164,8 +164,7 @@ var packageRemoveCmd = &cobra.Command{
 		pkgName := args[0]
 
 		// If the user input is a path to a package, extract the name from the package
-		isTarball := regexp.MustCompile(`.*zarf-package-.*\.tar\.zst$`).MatchString
-		if isTarball(pkgName) {
+		if utils.IsZarfTarball(pkgName) {
 			if utils.InvalidPath(pkgName) {
 				message.Fatalf(nil, lang.CmdPackageRemoveTarballErr)
 			}
@@ -284,6 +283,8 @@ func choosePackage(args []string) string {
 func init() {
 	initViper()
 
+	v.SetDefault(V_PKG_PULL_OCI_CONCURRENCY, 3)
+
 	rootCmd.AddCommand(packageCmd)
 	packageCmd.AddCommand(packageCreateCmd)
 	packageCmd.AddCommand(packageDeployCmd)
@@ -375,7 +376,6 @@ func bindPublishFlags() {
 func bindPullFlags() {
 	pullFlags := packagePullCmd.Flags()
 	v.SetDefault(V_PKG_PULL_OUTPUT_DIR, "")
-	v.SetDefault(V_PKG_PULL_OCI_CONCURRENCY, 3)
 	pullFlags.StringVarP(&pkgConfig.PullOpts.OutputDirectory, "output-directory", "o", v.GetString(V_PKG_PULL_OUTPUT_DIR), lang.CmdPackageCreateFlagOutputDirectory)
 	pullFlags.IntVar(&pkgConfig.PullOpts.CopyOptions.Concurrency, "oci-concurrency", v.GetInt(V_PKG_PULL_OCI_CONCURRENCY), lang.CmdPackagePublishFlagConcurrency)
 	pullFlags.StringVarP(&pkgConfig.PullOpts.PublicKeyPath, "key", "k", v.GetString(V_PKG_PULL_PUBLIC_KEY), lang.CmdPackagePullPublicKey)

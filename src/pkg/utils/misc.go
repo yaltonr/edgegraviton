@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+var IsZarfTarball = regexp.MustCompile(`.*zarf-package-.*\.tar\.zst$`).MatchString
+
 // Unique returns a new slice with only unique elements.
 func Unique[T comparable](s []T) (r []T) {
 	exists := make(map[T]bool)

@@ -159,7 +159,7 @@ func (p *Packager) publish(ref registry.Reference) error {
 		for _, c := range p.cfg.Pkg.Components {
 			ex = append(ex, types.ZarfComponent{
 				Name: fmt.Sprintf("import-%s", c.Name),
-				Import: types.ZarfComponentImport{
+				Import: types.ZarfImport{
 					ComponentName: c.Name,
 					URL:           fmt.Sprintf("oci://%s", ref.String()),
 				},

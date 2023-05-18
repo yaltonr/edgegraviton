@@ -32,8 +32,8 @@ type ZarfComponent struct {
 	//Path to cosign publickey for signed online resources
 	CosignKeyPath string `json:"cosignKeyPath,omitempty" jsonschema:"description=Specify a path to a public key to validate signed online resources"`
 
-	// Import refers to another zarf.yaml package component.
-	Import ZarfComponentImport `json:"import,omitempty" jsonschema:"description=Import a component from another Zarf package"`
+	// Import refers to another zarf.yaml package or package component.
+	Import ZarfImport `json:"import,omitempty" jsonschema:"description=Import a component from another Zarf package, or another package entirely"`
 
 	// (Deprecated) DeprecatedScripts are custom commands that run before or after package deployment
 	DeprecatedScripts DeprecatedZarfComponentScripts `json:"scripts,omitempty" jsonschema:"description=[Deprecated] (replaced by actions) Custom commands to run before or after package deployment,deprecated=true"`
@@ -208,11 +208,12 @@ type ZarfDataInjection struct {
 	Compress bool                `json:"compress,omitempty" jsonschema:"description=Compress the data before transmitting using gzip.  Note: this requires support for tar/gzip locally and in the target image."`
 }
 
-// ZarfComponentImport structure for including imported Zarf components.
-type ZarfComponentImport struct {
+// ZarfComponentImport structure for including imported Zarf components and packages.
+type ZarfImport struct {
 	ComponentName string `json:"name,omitempty" jsonschema:"description=The name of the component to import from the referenced zarf.yaml"`
 	// For further explanation see https://regex101.com/r/nxX8vx/1
 	Path string `json:"path,omitempty" jsonschema:"description=The relative path to a directory containing a zarf.yaml to import from,pattern=^(?!.*###ZARF_PKG_TMPL_).*$"`
 	// For further explanation see https://regex101.com/r/nxX8vx/1
-	URL string `json:"url,omitempty" jsonschema:"description=The URL to a Zarf package to import via OCI,pattern=^oci://(?!.*###ZARF_PKG_TMPL_).*$"`
+	URL  string `json:"url,omitempty" jsonschema:"description=The URL to a Zarf OCI package,pattern=^oci://(?!.*###ZARF_PKG_TMPL_).*$"`
+	Type string `json:"type,omitempty" jsonschema:"description=The type of import to perform,enum=component,enum=package"`
 }
