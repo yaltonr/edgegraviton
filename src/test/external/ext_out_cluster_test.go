@@ -7,6 +7,7 @@ package external
 import (
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"testing"
 
@@ -42,13 +43,18 @@ type ExtOutClusterTestSuite struct {
 func (suite *ExtOutClusterTestSuite) SetupSuite() {
 	suite.Assertions = require.New(suite.T())
 
+	// At least on Windows WSL2 resolving anything.localhost will not happen, adding it to the /etc/hosts explictly will fix it
+	_, err := net.LookupHost(registryHost)
+	suite.NoError(err, "Failed to resolve '%s' (necessary for this test suite)", registryHost)
+	_, err = net.LookupHost(giteaHost)
+	suite.NoError(err, "Failed to resolve '%s' (necessary for this test suite)", giteaHost)
 	// Teardown any leftovers from previous tests
 	_ = exec.CmdWithPrint("k3d", "cluster", "delete", clusterName)
 	_ = exec.CmdWithPrint("k3d", "registry", "delete", registryHost)
 	_ = exec.CmdWithPrint("docker", "network", "remove", network)
 
 	// Setup a network for everything to live inside
-	err := exec.CmdWithPrint("docker", "network", "create", "--driver=bridge", "--subnet="+subnet, "--gateway="+gateway, network)
+	err = exec.CmdWithPrint("docker", "network", "create", "--driver=bridge", "--subnet="+subnet, "--gateway="+gateway, network)
 	suite.NoError(err, "unable to create the k3d registry")
 
 	// Install a k3d-managed registry server to act as the 'remote' container registry
