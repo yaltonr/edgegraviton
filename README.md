@@ -3,7 +3,9 @@
 
 <img align="right" alt="zarf logo" src=".images/Graviton Logo.png"  height="150" width="150" />
 
-Zarf eliminates the [complexity of air gap software delivery](https://www.itopstimes.com/contain/air-gap-kubernetes-considerations-for-running-cloud-native-applications-without-the-cloud/) for Kubernetes clusters and cloud-native workloads using a declarative packaging strategy to support DevSecOps in offline and semi-connected environments.
+Edge graviton is thought to create specific configuration of enterprises for edge deployments. It is utilizing many open source components as the basis, it is the case of Zarf. 
+
+The idea is to deploy out of the box kubernetes on edge.
 
 ## Why Use Zarf
 
