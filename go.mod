@@ -27,7 +27,7 @@ require (
 	github.com/google/go-containerregistry v0.17.0
 	github.com/gosuri/uitable v0.0.4
 	github.com/mholt/archiver/v3 v3.5.1
-	github.com/moby/moby v24.0.7+incompatible
+	github.com/moby/moby v25.0.2+incompatible
 	github.com/opencontainers/image-spec v1.1.0-rc5
 	github.com/otiai10/copy v1.14.0
 	github.com/pkg/errors v0.9.1
@@ -199,7 +199,7 @@ require (
 	github.com/digitorus/timestamp v0.0.0-20230902153158-687734543647 // indirect
 	github.com/dimchansky/utfbom v1.1.1 // indirect
 	github.com/docker/distribution v2.8.3+incompatible // indirect
-	github.com/docker/docker v24.0.7+incompatible // indirect
+	github.com/docker/docker v25.0.2+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.8.0 // indirect
 	github.com/docker/go-connections v0.4.0 // indirect
 	github.com/docker/go-events v0.0.0-20190806004212-e31b211e4f1c // indirect
