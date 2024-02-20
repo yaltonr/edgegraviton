@@ -3,7 +3,7 @@
 
 <img align="right" alt="zarf logo" src=".images/Graviton Logo.png"  height="150" width="150" />
 
-Edge graviton is thought to create specific configuration of enterprises for edge deployments. It is utilizing many open source components as the basis, it is the case of Zarf. 
+Edge graviton is thought to create specific configurations of enterprises for edge deployments. It utilizes many open source components as the basis, the case of Zarf. The idea is to have zero-touch provisioning of edge airgap environment.
 
 The idea is to deploy out of the box kubernetes on edge.
 
