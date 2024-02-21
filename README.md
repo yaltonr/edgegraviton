@@ -5,7 +5,9 @@
 
 Edge graviton is thought to create specific configurations of enterprises for edge deployments. It utilizes many open source components as the basis, the case of Zarf. The idea is to have zero-touch provisioning of edge airgap environment.
 
-The idea is to deploy out of the box kubernetes on edge.
+The idea is to deploy out-of-the-box Kubernetes on airgap edge.
+
+**Zero-touch -  SBOM - CIS and FIPS conformance**
 
 ## Why Use Zarf
 
