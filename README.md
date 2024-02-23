@@ -11,6 +11,11 @@ The idea is to deploy out-of-the-box Kubernetes on airgap edge.
 
 Automatic provisioning with customized configurations.
 
+Are you ready for the computational shift to the edge: “Around 10% of enterprise-generated data is created and processed outside a traditional centralized data center or cloud. By 2025, Gartner predicts this figure will reach 75%”
+
+
+
+
 ## Why Use Zarf
 
 - 💸 **Free and Open-Source.** Zarf will always be free to use and maintained by the open-source community.
