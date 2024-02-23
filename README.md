@@ -9,6 +9,8 @@ The idea is to deploy out-of-the-box Kubernetes on airgap edge.
 
 **Zero-touch -  SBOM - CIS and FIPS conformance**
 
+Automatic provisioning with customized configurations.
+
 ## Why Use Zarf
 
 - 💸 **Free and Open-Source.** Zarf will always be free to use and maintained by the open-source community.
