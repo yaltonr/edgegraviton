@@ -21,7 +21,7 @@ zarf package deploy # This will prompt you to deploy the created zarf package
 
 Examples are for demo purposes only and are not meant for production use, they exist to demo various ways to use Zarf. Modifying examples to fit production use is possible but requires additional configuration, time, and Kubernetes knowledge.
 
-Examples also utilize software pulled from multiple sources and _some_ of them require authenticated access. Check the examples themselves for the specific accounts / logins required. Check.
+Examples also utilize software pulled from multiple sources and _some_ of them require authenticated access. Check the examples themselves for the specific accounts / logins required. 
 
 :::
 
